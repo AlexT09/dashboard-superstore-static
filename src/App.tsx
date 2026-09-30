@@ -14,7 +14,7 @@ import {
 } from "recharts";
 import photo from "@/assets/superstore.webp";
 import { getOrders, type Order } from "@/lib/sales-data";
-import { computeAll, fmtMoney, fmtNum, fmtPct, histogram, kde, levelsOf, sum } from "@/lib/stats";
+import { computeAll, fmtMoney, fmtNum, fmtPct, histogram, kde, levelsOf } from "@/lib/stats";
 import { ordersFromCSV } from "@/lib/csv";
 
 const C = {
@@ -54,11 +54,8 @@ const SECTIONS = [
   { id: "distribucion", label: "Distribución" },
   { id: "factores", label: "Factores" },
   { id: "relaciones", label: "Relaciones" },
-  { id: "recomendacion", label: "Recomendación" },
+  { id: "conclusion", label: "Conclusión" },
 ] as const;
-
-/** Dinero con signo delante ("−$135.4K"), para cifras que pueden ser negativas. */
-const signedMoney = (v: number) => (v < 0 ? "−" + fmtMoney(-v) : fmtMoney(v));
 
 export function App() {
   const [data, setData] = useState<{ orders: Order[]; source: string; updated: string | null }>(
@@ -152,33 +149,15 @@ export function App() {
     return orders.filter((_, i) => i % step === 0).map((o) => ({ x: o[scatterVar], y: o.sales }));
   }, [orders, scatterVar]);
 
-  // Cifras de apoyo para justificar las interpretaciones.
-  const extra = useMemo(() => {
-    const hd = orders.filter((o) => o.discount >= 0.3);
-    const lo = orders.filter((o) => o.discount <= 0.2);
-    const loSales = sum(lo.map((o) => o.sales));
-    return {
-      hdN: hd.length,
-      hdProfit: sum(hd.map((o) => o.profit)),
-      loMargin: loSales ? sum(lo.map((o) => o.profit)) / loSales : 0,
-    };
-  }, [orders]);
-
   const factors = (["category", "region", "segment"] as Dim[])
     .map((k) => ({ k, v: s.eta[k] }))
     .sort((a, b) => b.v - a.v);
-  const etaRatio = factors[1]!.v > 0.0005 ? factors[0]!.v / factors[1]!.v : null;
   const byMean = (g: typeof s.byCategory) => [...g].sort((a, b) => b.meanSales - a.meanSales)[0];
   const byOrders = (g: typeof s.byCategory) => [...g].sort((a, b) => b.orders - a.orders)[0];
   const topCat = byMean(s.byCategory);
-  const topSeg = byMean(s.bySegment);
   const mostOrdersCat = byOrders(s.byCategory);
   const mostOrdersReg = byOrders(s.byRegion);
   const mostOrdersSeg = byOrders(s.bySegment);
-  const lowMargin = [...s.byCategory].sort((a, b) => a.margin - b.margin)[0];
-  const topReg = [...s.byRegion].sort((a, b) => b.totalProfit - a.totalProfit)[0];
-  const bestMarginReg = [...s.byRegion].sort((a, b) => b.margin - a.margin)[0];
-  const worstReg = [...s.byRegion].sort((a, b) => a.margin - b.margin)[0];
   const filtered = orders.length !== all.length;
 
   const csvButton = (compact = false) => (
@@ -335,14 +314,7 @@ export function App() {
                 className="xl:col-span-7"
                 title="Histograma de Sales"
                 note="Sin los pedidos más extremos, para ver mejor la forma."
-                insight={
-                  <>
-                    La mayoría de los pedidos son de poco valor y unos pocos pedidos grandes elevan el promedio;
-                    por eso la venta media (<b>{fmtMoney(s.sales.mean)}</b>) queda muy por encima de la mediana (
-                    <b>{fmtMoney(s.sales.median)}</b>). Para comparar grupos conviene fijarse en la mediana o en
-                    la escala logarítmica.
-                  </>
-                }
+                insight="La mayoría de los pedidos se concentra en valores bajos de venta, con una cola larga hacia la derecha: unos pocos pedidos grandes jalan el promedio hacia arriba."
               >
                 <ChartBox h={240}>
                   <BarChart data={hist} margin={{ bottom: 18, left: 6, right: 4 }}>
@@ -350,7 +322,7 @@ export function App() {
                     <XAxis dataKey="label" tick={axis} interval={5} label={xLabel("Ventas ($)")} />
                     <YAxis tick={axis} width={58} label={yLabel("Pedidos")} />
                     <Tooltip {...tooltipStyle} />
-                    <Bar dataKey="count" name="Pedidos" fill={C.p} radius={[3, 3, 0, 0]} />
+                    <Bar isAnimationActive={false} dataKey="count" name="Pedidos" fill={C.p} radius={[3, 3, 0, 0]} />
                   </BarChart>
                 </ChartBox>
               </Card>
@@ -358,13 +330,7 @@ export function App() {
                 className="xl:col-span-5"
                 title="Densidad de log(Sales)"
                 note="Las mismas ventas en escala logarítmica."
-                insight={
-                  <>
-                    En escala logarítmica la distribución se ve mucho más equilibrada, lo que permite comparar
-                    grupos sin que los pedidos extremos dominen. El abultamiento de la derecha corresponde a
-                    pedidos de mayor valor, sobre todo de Furniture y Technology.
-                  </>
-                }
+                insight="Al aplicar el logaritmo la distribución se vuelve más simétrica y manejable, lo que facilita comparar grupos."
               >
                 <ChartBox h={240}>
                   <AreaChart data={dens} margin={{ bottom: 18, left: 6, right: 4 }}>
@@ -372,20 +338,14 @@ export function App() {
                     <XAxis dataKey="x" tick={axis} interval={11} label={xLabel("Log(Ventas)")} />
                     <YAxis tick={axis} width={58} label={yLabel("Densidad")} />
                     <Tooltip {...tooltipStyle} />
-                    <Area dataKey="density" name="Densidad" stroke={C.p} fill={C.p} fillOpacity={0.14} strokeWidth={2} />
+                    <Area isAnimationActive={false} dataKey="density" name="Densidad" stroke={C.p} fill={C.p} fillOpacity={0.14} strokeWidth={2} />
                   </AreaChart>
                 </ChartBox>
               </Card>
               <Card
                 className="xl:col-span-12"
                 title="Resumen estadístico de Sales"
-                insight={
-                  <>
-                    La mitad de los pedidos está entre <b>{fmtMoney(s.sales.q1)}</b> y{" "}
-                    <b>{fmtMoney(s.sales.q3)}</b>, pero algunos llegan a <b>{fmtMoney(s.sales.max)}</b>. Son pocos,
-                    pero pesan mucho en el total.
-                  </>
-                }
+                insight="La media queda muy por encima de la mediana: la mayoría de los pedidos son de bajo valor y unos pocos pedidos muy grandes elevan el promedio."
               >
                 <div className="grid grid-cols-3 gap-2 font-mono sm:grid-cols-6">
                   {(
@@ -418,15 +378,12 @@ export function App() {
               <Card
                 className="md:col-span-2 xl:col-span-3"
                 title="Qué factor explica más las ventas"
-                note="Peso de cada factor en el valor de los pedidos (η²)."
+                note="Peso de cada factor en el valor de los pedidos."
                 insight={
                   <>
-                    <b>{DIM_LABEL[factors[0]!.k]}</b> es{etaRatio && etaRatio >= 3 ? ", por lejos," : ""} el factor
-                    que más explica el valor de los pedidos; {DIM_LABEL[factors[1]!.k].toLowerCase()} y{" "}
-                    {DIM_LABEL[factors[2]!.k].toLowerCase()} casi no lo cambian. Esto responde la pregunta del
-                    proyecto y coincide con el EDA: los pedidos de Office Supplies son claramente más pequeños que
-                    los de Technology y Furniture, mientras que entre regiones y segmentos el pedido típico es muy
-                    parecido.
+                    <b>{DIM_LABEL[factors[0]!.k]}</b> es el factor que más explica el valor de los pedidos, mientras que{" "}
+                    {DIM_LABEL[factors[1]!.k].toLowerCase()} y {DIM_LABEL[factors[2]!.k].toLowerCase()} muestran
+                    diferencias más leves.
                   </>
                 }
               >
@@ -455,17 +412,15 @@ export function App() {
                 insight={
                   s.byCategory.length < 2 || !mostOrdersCat || !topCat ? (
                     "Hay una sola categoría en el filtro actual."
-                  ) : mostOrdersCat.name === topCat.name ? (
-                    <>
-                      <b>{topCat.name}</b> concentra más pedidos y además tiene la venta media más alta (
-                      {fmtMoney(topCat.meanSales)}).
-                    </>
                   ) : (
                     <>
-                      <b>{mostOrdersCat.name}</b> tiene la mayor cantidad de pedidos, pero de poco valor.{" "}
-                      <b>{topCat.name}</b> vende menos pedidos, pero más grandes
-                      {topCat.totalSales > mostOrdersCat.totalSales ? ", y termina aportando más ventas" : ""}. La
-                      categoría cambia el tamaño de cada pedido, no solo cuántos hay.
+                      <b>{mostOrdersCat.name}</b> es la categoría que más rota en número de pedidos
+                      {mostOrdersCat.name !== topCat.name ? (
+                        <>
+                          , aunque <b>{topCat.name}</b> tiene pedidos de mayor valor
+                        </>
+                      ) : null}
+                      .
                     </>
                   )
                 }
@@ -475,21 +430,19 @@ export function App() {
                     <XAxis type="number" tick={axis} label={xLabel("Pedidos")} />
                     <YAxis type="category" dataKey="name" tick={axis} width={96} />
                     <Tooltip {...tooltipStyle} />
-                    <Bar dataKey="orders" name="Pedidos" fill={C.p} radius={[0, 3, 3, 0]} />
+                    <Bar isAnimationActive={false} dataKey="orders" name="Pedidos" fill={C.p} radius={[0, 3, 3, 0]} />
                   </BarChart>
                 </ChartBox>
               </Card>
               <Card
                 title="Pedidos por región"
                 insight={
-                  s.byRegion.length < 2 || !mostOrdersReg || !bestMarginReg || !worstReg ? (
+                  s.byRegion.length < 2 || !mostOrdersReg ? (
                     "Hay una sola región en el filtro actual."
                   ) : (
                     <>
-                      <b>{mostOrdersReg.name}</b> es la región con más pedidos, pero el pedido típico vale parecido
-                      en todas: la región cambia el volumen, no el valor de cada pedido. Donde sí se diferencian es
-                      en rentabilidad, porque <b>{bestMarginReg.name}</b> gana más por cada venta que{" "}
-                      <b>{worstReg.name}</b>.
+                      <b>{mostOrdersReg.name}</b> tiene el mayor número de pedidos. Las diferencias entre regiones
+                      son menos marcadas que entre categorías.
                     </>
                   )
                 }
@@ -499,7 +452,7 @@ export function App() {
                     <XAxis type="number" tick={axis} label={xLabel("Pedidos")} />
                     <YAxis type="category" dataKey="name" tick={axis} width={96} />
                     <Tooltip {...tooltipStyle} />
-                    <Bar dataKey="orders" name="Pedidos" fill={C.p} radius={[0, 3, 3, 0]} />
+                    <Bar isAnimationActive={false} dataKey="orders" name="Pedidos" fill={C.p} radius={[0, 3, 3, 0]} />
                   </BarChart>
                 </ChartBox>
               </Card>
@@ -507,13 +460,12 @@ export function App() {
                 className="md:col-span-2 xl:col-span-1"
                 title="Pedidos por segmento"
                 insight={
-                  s.bySegment.length < 2 || !mostOrdersSeg || !topSeg ? (
+                  s.bySegment.length < 2 || !mostOrdersSeg ? (
                     "Hay un solo segmento en el filtro actual."
                   ) : (
                     <>
-                      <b>{mostOrdersSeg.name}</b> concentra más pedidos y por eso vende más, pero el pedido típico
-                      es muy parecido en los tres segmentos. <b>{topSeg.name}</b> tiene una venta media algo mayor,
-                      aunque la diferencia es pequeña: el segmento no cambia cuánto se gasta por pedido.
+                      <b>{mostOrdersSeg.name}</b> tiene más pedidos y por eso genera más ventas totales, aunque
+                      ningún segmento sobresale en el valor de cada pedido.
                     </>
                   )
                 }
@@ -523,7 +475,7 @@ export function App() {
                     <XAxis type="number" tick={axis} label={xLabel("Pedidos")} />
                     <YAxis type="category" dataKey="name" tick={axis} width={96} />
                     <Tooltip {...tooltipStyle} />
-                    <Bar dataKey="orders" name="Pedidos" fill={C.p} radius={[0, 3, 3, 0]} />
+                    <Bar isAnimationActive={false} dataKey="orders" name="Pedidos" fill={C.p} radius={[0, 3, 3, 0]} />
                   </BarChart>
                 </ChartBox>
               </Card>
@@ -536,17 +488,10 @@ export function App() {
               title="Relación con las variables numéricas"
               text="Beneficio, cantidad y descuento frente al valor de venta."
             />
-            <div className="grid gap-4 xl:grid-cols-12">
+            <div className="grid gap-4">
               <Card
-                className="xl:col-span-8"
                 title="Ventas frente a otras variables"
-                insight={
-                  <>
-                    El beneficio es lo que más acompaña a las ventas, y la cantidad lo hace en menor medida. El
-                    descuento casi no tiene una relación lineal con el monto vendido, pero sí con el beneficio: su
-                    efecto se nota más en cuánto se gana que en cuánto se vende.
-                  </>
-                }
+                insight="Sales y Profit tienen la relación más fuerte: a mayor venta, mayor ganancia. Con Quantity la relación es débil, y con Discount casi no hay relación lineal."
               >
                 <div className="mb-3 flex flex-wrap gap-2">
                   {(["profit", "quantity", "discount"] as const).map((v) => (
@@ -582,78 +527,24 @@ export function App() {
                       label={yLabel("Sales (log)")}
                     />
                     <Tooltip {...tooltipStyle} cursor={{ strokeDasharray: "3 3", stroke: "#353a41" }} />
-                    <Scatter data={scatter} fill={C.p} fillOpacity={0.45} />
+                    <Scatter isAnimationActive={false} data={scatter} fill={C.p} fillOpacity={0.45} />
                   </ScatterChart>
                 </ChartBox>
-              </Card>
-              <Card
-                className="xl:col-span-4"
-                title="Impacto del descuento"
-                insight={
-                  extra.hdN ? (
-                    "Los descuentos altos no traen pedidos más grandes y casi siempre terminan en pérdida. Con descuentos moderados, en cambio, el negocio mantiene un margen sano."
-                  ) : (
-                    "En este filtro no hay pedidos con descuentos altos."
-                  )
-                }
-              >
-                <div className="grid grid-cols-2 gap-2 xl:grid-cols-1">
-                  <Stat
-                    label="Pedidos con descuento alto que pierden dinero"
-                    value={extra.hdN ? fmtPct(s.highDiscountLossPct, 0) : "—"}
-                    sub="descuentos de 30 % o más"
-                    tone="neg"
-                  />
-                  <Stat
-                    label="Resultado de esos pedidos"
-                    value={extra.hdN ? signedMoney(extra.hdProfit) : "—"}
-                    sub="beneficio acumulado"
-                    tone={extra.hdProfit < 0 ? "neg" : undefined}
-                  />
-                  <Stat
-                    className="col-span-2 xl:col-span-1"
-                    label="Margen con descuentos bajos"
-                    value={fmtPct(extra.loMargin, 0)}
-                    sub="descuentos de hasta 20 %"
-                  />
-                </div>
               </Card>
             </div>
           </section>
 
-          {/* ---------- recomendación ---------- */}
-          <section id="recomendacion" className="mt-10">
-            <SectionHead title="Qué debería priorizar el negocio" text="Tres acciones que se desprenden del análisis." />
+          {/* ---------- conclusión ---------- */}
+          <section id="conclusion" className="mt-10">
+            <SectionHead title="Conclusión" text="Lo que muestran los gráficos en conjunto." />
             <div className="panel p-5 sm:p-6">
-              <ol className="grid gap-5 lg:grid-cols-3 lg:gap-6">
-                {extra.hdN > 0 && (
-                  <Action n={1} title="Cuidar los descuentos altos">
-                    Casi todos los pedidos con descuentos grandes terminan en pérdida. Moderarlos es la forma más
-                    directa de mejorar la rentabilidad sin afectar el tamaño de los pedidos.
-                  </Action>
-                )}
-                {lowMargin && (
-                  <Action n={extra.hdN > 0 ? 2 : 1} title={`Revisar la rentabilidad de ${lowMargin.name}`}>
-                    Vende pedidos de buen tamaño, pero es la categoría que menos gana y una parte importante de sus
-                    pedidos da pérdida. Conviene revisar sus precios y descuentos.
-                  </Action>
-                )}
-                {topReg && worstReg && topReg.name !== worstReg.name && (
-                  <Action n={(extra.hdN > 0 ? 2 : 1) + (lowMargin ? 1 : 0)} title={`Llevar a ${worstReg.name} lo que funciona en ${topReg.name}`}>
-                    {worstReg.name} aplica más descuento y gana menos por cada venta, mientras que {topReg.name}{" "}
-                    descuenta menos y es la región que más beneficio deja.
-                  </Action>
-                )}
-              </ol>
-              <div className="mt-6 border-t border-border pt-5">
-                <p className="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">Conclusión del EDA</p>
-                <p className="mt-2 max-w-4xl text-[15px] leading-relaxed text-soft-foreground [&_b]:font-semibold [&_b]:text-foreground">
-                  La <b>categoría</b> es el factor que más explica el nivel de ventas porque define el tamaño típico
-                  del pedido: Technology y Furniture venden pedidos grandes y Office Supplies muchos pedidos
-                  pequeños. <b>Región</b> y <b>segmento</b> cambian el número de pedidos, no su valor. El{" "}
-                  <b>descuento</b> no tiene una relación lineal con las ventas, pero sí afecta la rentabilidad.
-                </p>
-              </div>
+              <p className="max-w-4xl text-[15px] leading-relaxed text-soft-foreground [&_b]:font-semibold [&_b]:text-foreground">
+                Las ventas tienen una distribución muy sesgada hacia valores bajos, con pocos pedidos de alto valor.
+                La <b>categoría</b> es el factor que más explica diferencias en el valor de venta: Technology y
+                Furniture tienen pedidos más grandes, mientras que Office Supplies domina en volumen con pedidos de
+                menor valor. <b>Región</b> y <b>segmento</b> muestran diferencias más leves, y el <b>descuento</b> no
+                se relaciona linealmente con las ventas.
+              </p>
             </div>
           </section>
         </main>
@@ -748,43 +639,7 @@ function Kpi({
   );
 }
 
-function Stat({
-  label,
-  value,
-  sub,
-  tone,
-  className = "",
-}: {
-  label: string;
-  value: string;
-  sub?: string;
-  tone?: "neg";
-  className?: string;
-}) {
-  return (
-    <div className={`min-w-0 rounded-md bg-surface-2 px-3 py-2.5 ${className}`}>
-      <p className="text-xs leading-snug text-soft-foreground">{label}</p>
-      <p className={`mt-1 font-mono text-lg font-medium ${tone === "neg" ? "text-negative" : "text-foreground"}`}>{value}</p>
-      {sub && <p className="text-[11px] text-muted-foreground">{sub}</p>}
-    </div>
-  );
-}
 
-function Action({ n, title, children }: { n: number; title: string; children: ReactNode }) {
-  return (
-    <li className="flex gap-3">
-      <span className="grid size-7 shrink-0 place-items-center rounded-full bg-accent-soft font-mono text-xs font-semibold text-accent">
-        {n}
-      </span>
-      <div className="min-w-0">
-        <h3 className="font-semibold text-balance">{title}</h3>
-        <p className="mt-1 text-sm leading-relaxed text-soft-foreground [&_b]:font-semibold [&_b]:text-foreground">
-          {children}
-        </p>
-      </div>
-    </li>
-  );
-}
 
 function FilterGroup({
   label,
