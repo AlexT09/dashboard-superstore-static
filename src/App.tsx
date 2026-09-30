@@ -154,22 +154,15 @@ export function App() {
 
   // Cifras de apoyo para justificar las interpretaciones.
   const extra = useMemo(() => {
-    const desc = orders.map((o) => o.sales).sort((a, b) => b - a);
-    const k = Math.max(1, Math.floor(desc.length * 0.1));
     const hd = orders.filter((o) => o.discount >= 0.3);
     const lo = orders.filter((o) => o.discount <= 0.2);
     const loSales = sum(lo.map((o) => o.sales));
     return {
-      top10Share: s.totalSales ? sum(desc.slice(0, k)) / s.totalSales : 0,
       hdN: hd.length,
       hdProfit: sum(hd.map((o) => o.profit)),
       loMargin: loSales ? sum(lo.map((o) => o.profit)) / loSales : 0,
-      lossPct: (key: Dim, name: string) => {
-        const g = orders.filter((o) => o[key] === name);
-        return g.length ? g.filter((o) => o.profit < 0).length / g.length : 0;
-      },
     };
-  }, [orders, s]);
+  }, [orders]);
 
   const factors = (["category", "region", "segment"] as Dim[])
     .map((k) => ({ k, v: s.eta[k] }))
@@ -177,10 +170,6 @@ export function App() {
   const etaRatio = factors[1]!.v > 0.0005 ? factors[0]!.v / factors[1]!.v : null;
   const byMean = (g: typeof s.byCategory) => [...g].sort((a, b) => b.meanSales - a.meanSales)[0];
   const byOrders = (g: typeof s.byCategory) => [...g].sort((a, b) => b.orders - a.orders)[0];
-  const medRange = (g: typeof s.byCategory) => {
-    const m = g.map((x) => x.medianSales);
-    return [Math.min(...m), Math.max(...m)] as const;
-  };
   const topCat = byMean(s.byCategory);
   const topSeg = byMean(s.bySegment);
   const mostOrdersCat = byOrders(s.byCategory);
@@ -190,9 +179,6 @@ export function App() {
   const topReg = [...s.byRegion].sort((a, b) => b.totalProfit - a.totalProfit)[0];
   const bestMarginReg = [...s.byRegion].sort((a, b) => b.margin - a.margin)[0];
   const worstReg = [...s.byRegion].sort((a, b) => a.margin - b.margin)[0];
-  const [regMedLo, regMedHi] = medRange(s.byRegion);
-  const [segMedLo, segMedHi] = medRange(s.bySegment);
-  const share = (part: number, whole: number) => fmtPct(whole ? part / whole : 0);
   const filtered = orders.length !== all.length;
 
   const csvButton = (compact = false) => (
@@ -348,14 +334,13 @@ export function App() {
               <Card
                 className="xl:col-span-7"
                 title="Histograma de Sales"
-                note={`Pedidos hasta 3 × Q3 (${fmtMoney(s.sales.q3 * 3)}) para que se vea la forma.`}
+                note="Sin los pedidos más extremos, para ver mejor la forma."
                 insight={
                   <>
-                    Asimetría de <b>{fmtNum(s.sales.skew)}</b>: la media (<b>{fmtMoney(s.sales.mean)}</b>) es{" "}
-                    {fmtNum(s.sales.median ? s.sales.mean / s.sales.median : 0, 1)} veces la mediana (
-                    <b>{fmtMoney(s.sales.median)}</b>). El 10 % de pedidos más grandes genera el{" "}
-                    <b>{fmtPct(extra.top10Share)}</b> de las ventas. Como unos pocos pedidos pesan tanto, los
-                    grupos se comparan con la mediana o en log(Sales), no con la media.
+                    La mayoría de los pedidos son de poco valor y unos pocos pedidos grandes elevan el promedio;
+                    por eso la venta media (<b>{fmtMoney(s.sales.mean)}</b>) queda muy por encima de la mediana (
+                    <b>{fmtMoney(s.sales.median)}</b>). Para comparar grupos conviene fijarse en la mediana o en
+                    la escala logarítmica.
                   </>
                 }
               >
@@ -372,12 +357,12 @@ export function App() {
               <Card
                 className="xl:col-span-5"
                 title="Densidad de log(Sales)"
-                note="Misma variable en escala logarítmica."
+                note="Las mismas ventas en escala logarítmica."
                 insight={
                   <>
-                    Con el logaritmo la asimetría baja a <b>{fmtNum(s.logSales.skew)}</b> y la curva se parece a
-                    una normal. Por eso el análisis de factores (η²) se hace sobre log(Sales): así los pocos
-                    pedidos extremos no deciden la comparación.
+                    En escala logarítmica la distribución se ve mucho más equilibrada, lo que permite comparar
+                    grupos sin que los pedidos extremos dominen. El abultamiento de la derecha corresponde a
+                    pedidos de mayor valor, sobre todo de Furniture y Technology.
                   </>
                 }
               >
@@ -396,9 +381,9 @@ export function App() {
                 title="Resumen estadístico de Sales"
                 insight={
                   <>
-                    El 50 % central de los pedidos está entre <b>{fmtMoney(s.sales.q1)}</b> y{" "}
-                    <b>{fmtMoney(s.sales.q3)}</b> (rango intercuartílico de {fmtMoney(s.sales.q3 - s.sales.q1)}), mientras
-                    que el máximo llega a <b>{fmtMoney(s.sales.max)}</b>. La mayoría de los pedidos son pequeños.
+                    La mitad de los pedidos está entre <b>{fmtMoney(s.sales.q1)}</b> y{" "}
+                    <b>{fmtMoney(s.sales.q3)}</b>, pero algunos llegan a <b>{fmtMoney(s.sales.max)}</b>. Son pocos,
+                    pero pesan mucho en el total.
                   </>
                 }
               >
@@ -432,17 +417,16 @@ export function App() {
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <Card
                 className="md:col-span-2 xl:col-span-3"
-                title="Factor que explica log(Sales) · η²"
-                note="Proporción de la variación de log(Sales) que explica cada factor."
+                title="Qué factor explica más las ventas"
+                note="Peso de cada factor en el valor de los pedidos (η²)."
                 insight={
                   <>
-                    <b>{DIM_LABEL[factors[0]!.k]}</b> explica el {fmtPct(factors[0]!.v)} de la variación de
-                    log(Sales), frente a {fmtPct(factors[1]!.v)} de {DIM_LABEL[factors[1]!.k].toLowerCase()} y{" "}
-                    {fmtPct(factors[2]!.v)} de {DIM_LABEL[factors[2]!.k].toLowerCase()}
-                    {etaRatio && etaRatio >= 2 ? <>, unas <b>{fmtNum(etaRatio, 0)} veces</b> más que el siguiente</> : null}.
-                    Esta es la respuesta a la pregunta del proyecto. Coincide con el EDA sobre el dataset completo:
-                    en los boxplots de log(Sales), Office Supplies queda casi 2 puntos por debajo de Technology y
-                    Furniture, mientras que las cajas por región y por segmento casi se superponen.
+                    <b>{DIM_LABEL[factors[0]!.k]}</b> es{etaRatio && etaRatio >= 3 ? ", por lejos," : ""} el factor
+                    que más explica el valor de los pedidos; {DIM_LABEL[factors[1]!.k].toLowerCase()} y{" "}
+                    {DIM_LABEL[factors[2]!.k].toLowerCase()} casi no lo cambian. Esto responde la pregunta del
+                    proyecto y coincide con el EDA: los pedidos de Office Supplies son claramente más pequeños que
+                    los de Technology y Furniture, mientras que entre regiones y segmentos el pedido típico es muy
+                    parecido.
                   </>
                 }
               >
@@ -478,12 +462,10 @@ export function App() {
                     </>
                   ) : (
                     <>
-                      <b>{mostOrdersCat.name}</b> reúne el {share(mostOrdersCat.orders, s.n)} de los pedidos pero
-                      solo el {share(mostOrdersCat.totalSales, s.totalSales)} de las ventas. <b>{topCat.name}</b>{" "}
-                      hace lo contrario: {share(topCat.orders, s.n)} de los pedidos y{" "}
-                      {share(topCat.totalSales, s.totalSales)} de las ventas, con una venta mediana de{" "}
-                      {fmtMoney(topCat.medianSales)} frente a {fmtMoney(mostOrdersCat.medianSales)}. La categoría
-                      cambia el tamaño de cada pedido, no solo cuántos hay.
+                      <b>{mostOrdersCat.name}</b> tiene la mayor cantidad de pedidos, pero de poco valor.{" "}
+                      <b>{topCat.name}</b> vende menos pedidos, pero más grandes
+                      {topCat.totalSales > mostOrdersCat.totalSales ? ", y termina aportando más ventas" : ""}. La
+                      categoría cambia el tamaño de cada pedido, no solo cuántos hay.
                     </>
                   )
                 }
@@ -504,11 +486,10 @@ export function App() {
                     "Hay una sola región en el filtro actual."
                   ) : (
                     <>
-                      <b>{mostOrdersReg.name}</b> tiene más pedidos ({share(mostOrdersReg.orders, s.n)}), pero la
-                      venta mediana apenas cambia entre regiones ({fmtMoney(regMedLo)} a {fmtMoney(regMedHi)}): la
-                      región mueve el volumen, no el valor de cada pedido. Donde sí se separan es en margen:{" "}
-                      <b>{bestMarginReg.name}</b> {fmtPct(bestMarginReg.margin)} frente a <b>{worstReg.name}</b>{" "}
-                      {fmtPct(worstReg.margin)}.
+                      <b>{mostOrdersReg.name}</b> es la región con más pedidos, pero el pedido típico vale parecido
+                      en todas: la región cambia el volumen, no el valor de cada pedido. Donde sí se diferencian es
+                      en rentabilidad, porque <b>{bestMarginReg.name}</b> gana más por cada venta que{" "}
+                      <b>{worstReg.name}</b>.
                     </>
                   )
                 }
@@ -530,10 +511,9 @@ export function App() {
                     "Hay un solo segmento en el filtro actual."
                   ) : (
                     <>
-                      <b>{mostOrdersSeg.name}</b> aporta el {share(mostOrdersSeg.orders, s.n)} de los pedidos. Las
-                      medianas van de {fmtMoney(segMedLo)} a {fmtMoney(segMedHi)} y <b>{topSeg.name}</b> tiene la
-                      venta media más alta ({fmtMoney(topSeg.meanSales)}), pero con poca diferencia.{" "}
-                      {mostOrdersSeg.name} vende más porque tiene más pedidos, no pedidos más caros.
+                      <b>{mostOrdersSeg.name}</b> concentra más pedidos y por eso vende más, pero el pedido típico
+                      es muy parecido en los tres segmentos. <b>{topSeg.name}</b> tiene una venta media algo mayor,
+                      aunque la diferencia es pequeña: el segmento no cambia cuánto se gasta por pedido.
                     </>
                   )
                 }
@@ -559,15 +539,12 @@ export function App() {
             <div className="grid gap-4 xl:grid-cols-12">
               <Card
                 className="xl:col-span-8"
-                title="Relación de Sales con variables numéricas"
+                title="Ventas frente a otras variables"
                 insight={
                   <>
-                    Beneficio (r = <b>{fmtNum(s.corr.profit)}</b>) es la variable que más acompaña a las ventas;
-                    cantidad (r = {fmtNum(s.corr.quantity)}) lo hace débilmente. El descuento casi no se relaciona
-                    con el monto vendido (r = {fmtNum(s.corr.discount)}), pero sí con el beneficio (r ={" "}
-                    <b>{fmtNum(s.corr.discountProfit)}</b>): su efecto no está en cuánto se vende, sino en cuánto se
-                    gana. Como la correlación solo mide relaciones lineales, el EDA lo confirma con el gráfico de
-                    bins 2D.
+                    El beneficio es lo que más acompaña a las ventas, y la cantidad lo hace en menor medida. El
+                    descuento casi no tiene una relación lineal con el monto vendido, pero sí con el beneficio: su
+                    efecto se nota más en cuánto se gana que en cuánto se vende.
                   </>
                 }
               >
@@ -614,34 +591,30 @@ export function App() {
                 title="Impacto del descuento"
                 insight={
                   extra.hdN ? (
-                    <>
-                      Un descuento alto no hace más grande el pedido, pero casi siempre lo vuelve una pérdida. Con
-                      descuentos de hasta 20 % el margen es <b>{fmtPct(extra.loMargin)}</b>, por encima del margen
-                      total de {fmtPct(s.margin)}.
-                    </>
+                    "Los descuentos altos no traen pedidos más grandes y casi siempre terminan en pérdida. Con descuentos moderados, en cambio, el negocio mantiene un margen sano."
                   ) : (
-                    "No hay pedidos con descuento de 30 % o más en el filtro actual."
+                    "En este filtro no hay pedidos con descuentos altos."
                   )
                 }
               >
                 <div className="grid grid-cols-2 gap-2 xl:grid-cols-1">
                   <Stat
-                    label="Pedidos con descuento ≥ 30 % que pierden dinero"
-                    value={extra.hdN ? fmtPct(s.highDiscountLossPct) : "—"}
-                    sub={`${fmtNum(extra.hdN, 0)} pedidos`}
+                    label="Pedidos con descuento alto que pierden dinero"
+                    value={extra.hdN ? fmtPct(s.highDiscountLossPct, 0) : "—"}
+                    sub="descuentos de 30 % o más"
                     tone="neg"
                   />
                   <Stat
-                    label="Beneficio neto de esos pedidos"
+                    label="Resultado de esos pedidos"
                     value={extra.hdN ? signedMoney(extra.hdProfit) : "—"}
-                    sub="suma de todos ellos"
+                    sub="beneficio acumulado"
                     tone={extra.hdProfit < 0 ? "neg" : undefined}
                   />
                   <Stat
                     className="col-span-2 xl:col-span-1"
-                    label="Margen con descuento ≤ 20 %"
-                    value={fmtPct(extra.loMargin)}
-                    sub={`margen total ${fmtPct(s.margin)}`}
+                    label="Margen con descuentos bajos"
+                    value={fmtPct(extra.loMargin, 0)}
+                    sub="descuentos de hasta 20 %"
                   />
                 </div>
               </Card>
@@ -650,28 +623,25 @@ export function App() {
 
           {/* ---------- recomendación ---------- */}
           <section id="recomendacion" className="mt-10">
-            <SectionHead title="Qué debería priorizar el negocio" text="Acciones ordenadas por impacto, con la cifra que las respalda." />
+            <SectionHead title="Qué debería priorizar el negocio" text="Tres acciones que se desprenden del análisis." />
             <div className="panel p-5 sm:p-6">
               <ol className="grid gap-5 lg:grid-cols-3 lg:gap-6">
                 {extra.hdN > 0 && (
-                  <Action n={1} title="Limitar los descuentos de 30 % o más">
-                    El {fmtPct(s.highDiscountLossPct, 0)} de esos pedidos pierde dinero y en conjunto restan{" "}
-                    <b>{signedMoney(extra.hdProfit)}</b> de beneficio. Con descuentos de hasta 20 % el margen sube a{" "}
-                    <b>{fmtPct(extra.loMargin)}</b>.
+                  <Action n={1} title="Cuidar los descuentos altos">
+                    Casi todos los pedidos con descuentos grandes terminan en pérdida. Moderarlos es la forma más
+                    directa de mejorar la rentabilidad sin afectar el tamaño de los pedidos.
                   </Action>
                 )}
                 {lowMargin && (
-                  <Action n={extra.hdN > 0 ? 2 : 1} title={`Revisar precios y descuentos de ${lowMargin.name}`}>
-                    Tiene el margen más bajo (<b>{fmtPct(lowMargin.margin)}</b>) y el{" "}
-                    <b>{fmtPct(extra.lossPct("category", lowMargin.name))}</b> de sus pedidos da pérdida, aunque
-                    su venta mediana es alta ({fmtMoney(lowMargin.medianSales)}). Vende bien, pero gana poco.
+                  <Action n={extra.hdN > 0 ? 2 : 1} title={`Revisar la rentabilidad de ${lowMargin.name}`}>
+                    Vende pedidos de buen tamaño, pero es la categoría que menos gana y una parte importante de sus
+                    pedidos da pérdida. Conviene revisar sus precios y descuentos.
                   </Action>
                 )}
                 {topReg && worstReg && topReg.name !== worstReg.name && (
-                  <Action n={(extra.hdN > 0 ? 2 : 1) + (lowMargin ? 1 : 0)} title={`Llevar a ${worstReg.name} la política de ${topReg.name}`}>
-                    {worstReg.name} aplica un descuento medio de <b>{fmtPct(worstReg.meanDiscount, 0)}</b> y su margen es{" "}
-                    {fmtPct(worstReg.margin)}. {topReg.name} descuenta {fmtPct(topReg.meanDiscount, 0)}, logra{" "}
-                    {fmtPct(topReg.margin)} de margen y el mayor beneficio (<b>{fmtMoney(topReg.totalProfit)}</b>).
+                  <Action n={(extra.hdN > 0 ? 2 : 1) + (lowMargin ? 1 : 0)} title={`Llevar a ${worstReg.name} lo que funciona en ${topReg.name}`}>
+                    {worstReg.name} aplica más descuento y gana menos por cada venta, mientras que {topReg.name}{" "}
+                    descuenta menos y es la región que más beneficio deja.
                   </Action>
                 )}
               </ol>
@@ -681,7 +651,7 @@ export function App() {
                   La <b>categoría</b> es el factor que más explica el nivel de ventas porque define el tamaño típico
                   del pedido: Technology y Furniture venden pedidos grandes y Office Supplies muchos pedidos
                   pequeños. <b>Región</b> y <b>segmento</b> cambian el número de pedidos, no su valor. El{" "}
-                  <b>descuento</b> no aumenta las ventas, pero sí reduce la rentabilidad.
+                  <b>descuento</b> no tiene una relación lineal con las ventas, pero sí afecta la rentabilidad.
                 </p>
               </div>
             </div>
