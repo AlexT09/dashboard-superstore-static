@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from "react";
 import {
   Area,
   AreaChart,
@@ -20,11 +20,22 @@ const C = {
   p: "var(--color-chart-1)",
   t: "var(--color-chart-2)",
   a: "var(--color-chart-3)",
-  grid: "var(--color-border)",
-  mut: "var(--color-muted-foreground)",
+  grid: "#262626",
+  mut: "#8f8f8f",
 };
 const axis = { fontSize: 10, fill: C.mut, fontFamily: "var(--font-mono)" };
 const axisLabelStyle = { fontSize: 10, fill: C.mut, fontFamily: "var(--font-mono)" };
+const tooltipStyle = {
+  contentStyle: {
+    background: "#141414",
+    border: "1px solid #d4af374d",
+    borderRadius: 12,
+    fontFamily: "var(--font-mono)",
+    fontSize: 11,
+    color: "#e5e5e5",
+  },
+  cursor: { fill: "#d4af3708" },
+} as const;
 const xLabel = (value: string) => ({ value, position: "insideBottom" as const, offset: -4, style: axisLabelStyle });
 const yLabel = (value: string) => ({ value, angle: -90, position: "insideLeft" as const, offset: 12, style: axisLabelStyle });
 type Dim = "category" | "region" | "segment";
@@ -117,14 +128,14 @@ export function App() {
   const worstReg = [...s.byRegion].sort((a, b) => a.margin - b.margin)[0];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-[1400px] items-center gap-3 px-5">
-          <span className="grid size-7 place-items-center rounded-md bg-primary font-mono text-xs font-semibold text-primary-foreground">
+    <div className="hero-glow min-h-screen bg-background text-foreground">
+      <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-[1400px] items-center gap-3 px-6">
+          <span className="grid size-8 place-items-center rounded-lg bg-primary font-display text-sm font-bold text-primary-foreground">
             S
           </span>
-          <span className="font-mono text-sm font-semibold tracking-tight">
-            Sample Superstore<span className="text-muted-foreground">/dashboard</span>
+          <span className="font-display text-sm font-bold tracking-tight">
+            Sample Superstore<span className="text-muted-foreground"> / dashboard</span>
           </span>
           <div className="ml-auto flex items-center gap-2">
             <span className="hidden rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground sm:inline">
@@ -135,7 +146,7 @@ export function App() {
             {data.updated && (
               <button
                 onClick={resetSample}
-                className="rounded-full border border-border bg-card px-3 py-1.5 text-xs hover:bg-primary-soft"
+                className="rounded-full border border-border bg-card px-3 py-1.5 text-xs hover:border-primary/40"
               >
                 Restaurar dataset original
               </button>
@@ -153,7 +164,7 @@ export function App() {
             />
             <button
               onClick={() => fileRef.current?.click()}
-              className="rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90"
+              className="rounded-lg bg-primary px-4 py-2 text-xs font-bold text-primary-foreground transition-colors hover:bg-[#b8952d]"
             >
               ↑ Actualizar datos (CSV)
             </button>
@@ -161,9 +172,9 @@ export function App() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1400px] px-5 py-6">
+      <main className="mx-auto max-w-[1400px] px-6 py-8">
         {err && (
-          <div className="mb-4 rounded-xl bg-negative/10 px-4 py-3 text-sm text-negative">
+          <div className="mb-4 rounded-2xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-negative">
             {err} El CSV debe tener las columnas: Category, Region, Segment, Sales, Quantity,
             Discount, Profit.
           </div>
@@ -181,10 +192,10 @@ export function App() {
           ))}
         </div>
 
-        <div className="glass mt-4 grid grid-cols-2 rounded-2xl lg:grid-cols-5">
+        <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-5">
           <Kpi label="Ventas" value={fmtMoney(s.totalSales)} />
           <Kpi label="Beneficio" value={fmtMoney(s.totalProfit)} />
-          <Kpi label="Margen" value={fmtPct(s.margin)} />
+          <Kpi label="Margen" value={fmtPct(s.margin)} tone="gold" />
           <Kpi
             label="Venta media"
             value={fmtMoney(s.sales.mean)}
@@ -193,12 +204,12 @@ export function App() {
           <Kpi label="Pedidos con pérdida" value={fmtPct(s.lossOrdersPct)} tone="neg" />
         </div>
 
-        <h2 className="mb-3 mt-8 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+        <h2 className="mb-3 mt-10 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
           Visualizaciones e insights · qué factor explica el nivel de ventas
         </h2>
         <div className="grid grid-cols-12 gap-4">
           <Card
-            className="col-span-12 md:col-span-6"
+            className="col-span-12 md:col-span-8"
             title="Histograma de Sales"
             insight={
               <>
@@ -213,13 +224,13 @@ export function App() {
                 <CartesianGrid stroke={C.grid} vertical={false} />
                 <XAxis dataKey="label" tick={axis} interval={5} label={xLabel("Ventas ($)")} />
                 <YAxis tick={axis} width={58} label={yLabel("Pedidos")} />
-                <Tooltip />
+                <Tooltip {...tooltipStyle} />
                 <Bar dataKey="count" name="Pedidos" fill={C.p} radius={[3, 3, 0, 0]} />
               </BarChart>
             </ChartBox>
           </Card>
           <Card
-            className="col-span-12 md:col-span-6"
+            className="col-span-12 md:col-span-4"
             title="Densidad de log(Sales)"
             insight="En escala logarítmica la distribución se acerca a la normal, lo que facilita comparar el valor típico de un pedido entre grupos sin que los pocos pedidos extremos dominen la lectura."
           >
@@ -228,13 +239,13 @@ export function App() {
                 <CartesianGrid stroke={C.grid} vertical={false} />
                 <XAxis dataKey="x" tick={axis} interval={11} label={xLabel("Log(Ventas)")} />
                 <YAxis tick={axis} width={58} label={yLabel("Densidad")} />
-                <Tooltip />
+                <Tooltip {...tooltipStyle} />
                 <Area
                   dataKey="density"
                   name="Densidad"
-                  stroke={C.t}
-                  fill={C.t}
-                  fillOpacity={0.25}
+                  stroke={C.p}
+                  fill={C.p}
+                  fillOpacity={0.12}
                   strokeWidth={2}
                 />
               </AreaChart>
@@ -255,7 +266,7 @@ export function App() {
               <BarChart data={s.byCategory.slice(0, 8)} layout="vertical" margin={{ left: 10, bottom: 18 }}>
                 <XAxis type="number" tick={axis} label={xLabel("Pedidos")} />
                 <YAxis type="category" dataKey="name" tick={axis} width={85} />
-                <Tooltip />
+                <Tooltip {...tooltipStyle} />
                 <Bar dataKey="orders" name="Pedidos" fill={C.p} radius={[0, 3, 3, 0]} />
               </BarChart>
             </ChartBox>
@@ -274,7 +285,7 @@ export function App() {
               <BarChart data={s.byRegion.slice(0, 8)} layout="vertical" margin={{ left: 10, bottom: 18 }}>
                 <XAxis type="number" tick={axis} label={xLabel("Pedidos")} />
                 <YAxis type="category" dataKey="name" tick={axis} width={85} />
-                <Tooltip />
+                <Tooltip {...tooltipStyle} />
                 <Bar dataKey="orders" name="Pedidos" fill={C.t} radius={[0, 3, 3, 0]} />
               </BarChart>
             </ChartBox>
@@ -293,7 +304,7 @@ export function App() {
               <BarChart data={s.bySegment.slice(0, 8)} layout="vertical" margin={{ left: 10, bottom: 18 }}>
                 <XAxis type="number" tick={axis} label={xLabel("Pedidos")} />
                 <YAxis type="category" dataKey="name" tick={axis} width={85} />
-                <Tooltip />
+                <Tooltip {...tooltipStyle} />
                 <Bar dataKey="orders" name="Pedidos" fill={C.a} radius={[0, 3, 3, 0]} />
               </BarChart>
             </ChartBox>
@@ -316,7 +327,7 @@ export function App() {
                 <button
                   key={v}
                   onClick={() => setScatterVar(v)}
-                  className={`rounded-full border px-3 py-1 font-mono text-[11px] transition-colors ${scatterVar === v ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:bg-primary-soft"}`}
+                  className={`rounded-full border px-3 py-1 font-mono text-[11px] transition-colors ${scatterVar === v ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-muted-foreground hover:border-primary/40"}`}
                 >
                   Sales × {v === "profit" ? "Profit" : v === "quantity" ? "Quantity" : "Discount"} ·
                   r = {fmtNum(s.corr[v])}
@@ -343,8 +354,8 @@ export function App() {
                   domain={["auto", "auto"]}
                   label={yLabel("Sales (log)")}
                 />
-                <Tooltip cursor={{ strokeDasharray: "3 3" }} />
-                <Scatter data={scatter} fill={C.p} fillOpacity={0.35} />
+                <Tooltip {...tooltipStyle} cursor={{ strokeDasharray: "3 3" }} />
+                <Scatter data={scatter} fill={C.p} fillOpacity={0.45} />
               </ScatterChart>
             </ChartBox>
           </Card>
@@ -368,7 +379,7 @@ export function App() {
                     <span className="font-medium">{DIM_LABEL[f.k]}</span>
                     <span className="font-mono text-muted-foreground">{fmtPct(f.v)}</span>
                   </div>
-                  <div className="h-2.5 overflow-hidden rounded-full bg-muted">
+                  <div className="h-2 overflow-hidden rounded-full bg-muted">
                     <div
                       className="h-full rounded-full bg-primary transition-all duration-700"
                       style={{
@@ -399,29 +410,38 @@ export function App() {
           </Card>
         </div>
 
-        <h2 className="mb-3 mt-8 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+        <h2 className="mb-3 mt-10 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
           Qué debería priorizar el negocio
         </h2>
-        <Insight
-          n="→"
-          q="Recomendación con base en los datos"
-          wide
-        >
-          <b>{lowMargin?.name}</b> tiene el margen más bajo ({fmtPct(lowMargin?.margin ?? 0)}) y{" "}
-          <b>{worstReg?.name}</b> es la región menos rentable ({fmtPct(worstReg?.margin ?? 0)},
-          descuento medio {fmtPct(worstReg?.meanDiscount ?? 0, 0)}). <b>{topReg?.name}</b> lidera en
-          beneficio ({fmtMoney(topReg?.totalProfit ?? 0)}): controlar descuentos altos y replicar lo
-          que funciona allí es la palanca más clara.
-        </Insight>
+        <div className="relative overflow-hidden rounded-2xl bg-primary p-8 text-primary-foreground">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-16 -right-10 size-64 rounded-full bg-black/10 blur-3xl"
+          />
+          <div className="relative">
+            <div className="mb-3 flex items-center gap-2">
+              <span className="size-2 rounded-full bg-primary-foreground/90" />
+              <h3 className="font-display text-xs font-bold uppercase tracking-[0.16em]">
+                Recomendación con base en los datos
+              </h3>
+            </div>
+            <p className="max-w-4xl text-lg font-medium leading-relaxed [&_b]:font-bold">
+              <b>{lowMargin?.name}</b> tiene el margen más bajo ({fmtPct(lowMargin?.margin ?? 0)}) y{" "}
+              <b>{worstReg?.name}</b> es la región menos rentable ({fmtPct(worstReg?.margin ?? 0)},
+              descuento medio {fmtPct(worstReg?.meanDiscount ?? 0, 0)}). <b>{topReg?.name}</b> lidera
+              en beneficio ({fmtMoney(topReg?.totalProfit ?? 0)}): controlar descuentos altos y
+              replicar lo que funciona allí es la palanca más clara.
+            </p>
+          </div>
+        </div>
       </main>
 
-      <footer className="mt-10 border-t border-border">
-        <div className="mx-auto flex max-w-[1400px] justify-between px-5 py-5 font-mono text-[11px] text-muted-foreground">
+      <footer className="mt-12 border-t border-border">
+        <div className="mx-auto flex max-w-[1400px] justify-between px-6 py-5 font-mono text-[11px] text-muted-foreground">
           <span>Sample Superstore / dashboard</span>
           <span>{data.source}</span>
         </div>
       </footer>
-
     </div>
   );
 }
@@ -435,15 +455,17 @@ function Kpi({
   label: string;
   value: string;
   sub?: string;
-  tone?: "neg";
+  tone?: "neg" | "gold";
 }) {
   return (
-    <div className="border-b border-r border-border p-5 last:border-r-0 lg:border-b-0">
+    <div className="glass card-hover rounded-2xl border-l-4 p-5 border-l-transparent">
       <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
         {label}
       </p>
       <p
-        className={`mt-2 font-mono text-[1.6rem] font-semibold tracking-tight ${tone === "neg" ? "text-negative" : ""}`}
+        className={`mt-2 font-display text-[1.7rem] font-bold tracking-tight ${
+          tone === "neg" ? "text-negative" : tone === "gold" ? "text-primary" : "text-foreground"
+        }`}
       >
         {value}
       </p>
@@ -494,12 +516,14 @@ function Card({
   className?: string;
 }) {
   return (
-    <section className={`glass rounded-2xl p-5 ${className}`}>
-      <h3 className="mb-3 font-mono text-sm font-semibold tracking-tight">{title}</h3>
+    <section className={`glass card-hover rounded-2xl p-6 ${className}`}>
+      <h3 className="mb-4 font-display text-[13px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+        {title}
+      </h3>
       {children}
       {insight && (
-        <div className="mt-3 border-t border-border pt-3">
-          <p className="text-[12.5px] leading-relaxed text-muted-foreground [&_b]:font-semibold [&_b]:text-foreground">
+        <div className="mt-4 border-t border-border pt-4">
+          <p className="text-[12.5px] leading-relaxed text-muted-foreground [&_b]:font-semibold [&_b]:text-primary">
             {insight}
           </p>
         </div>
@@ -508,31 +532,7 @@ function Card({
   );
 }
 
-function Insight({
-  n,
-  q,
-  children,
-  wide,
-}: {
-  n: string;
-  q: string;
-  children: ReactNode;
-  wide?: boolean;
-}) {
-  return (
-    <article className={`glass flex flex-col rounded-2xl p-5 ${wide ? "md:col-span-2" : ""}`}>
-      <div className="flex items-baseline gap-3">
-        <span className="font-mono text-xs text-primary">{n}</span>
-        <h3 className="font-mono text-sm font-semibold tracking-tight">{q}</h3>
-      </div>
-      <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground [&_b]:font-semibold [&_b]:text-foreground">
-        {children}
-      </p>
-    </article>
-  );
-}
-
-function ChartBox({ children, h = 200 }: { children: React.ReactElement; h?: number }) {
+function ChartBox({ children, h = 200 }: { children: ReactElement; h?: number }) {
   return (
     <div style={{ height: h }}>
       <ResponsiveContainer width="100%" height="100%">

@@ -4,14 +4,24 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Design system — "Oro editorial".
+ * Noir & Gold: near-black backgrounds, muted neutral cards, gold accents used
+ * only for emphasis and data highlights. Space Grotesk headings, DM Sans body,
+ * JetBrains Mono for micro-labels and axis ticks.
+ */
+
 @theme inline {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", "DM Sans", ui-sans-serif, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -34,10 +44,12 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
   --animate-rise: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   @keyframes rise {
     from {
@@ -52,65 +64,75 @@
 }
 
 :root {
-  /* Paleta de marca del proyecto (común con common.py: BRAND #2E6F95 y
-     derivados), convertida a oklch para que el dashboard use el mismo azul
-     petróleo de un solo color que el resto de la app. */
-  --radius: 0.75rem;
-  --background: oklch(0.975 0.006 237);
-  --foreground: oklch(0.22 0.02 250);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.02 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.02 250);
-  --primary: oklch(0.517 0.089 237.7); /* BRAND #2E6F95 */
-  --primary-foreground: oklch(0.99 0 0);
-  --primary-soft: oklch(0.517 0.089 237.7 / 0.1);
-  --secondary: oklch(0.95 0.01 237);
-  --secondary-foreground: oklch(0.22 0.02 250);
-  --muted: oklch(0.95 0.008 237);
-  --muted-foreground: oklch(0.5 0.02 250);
-  --accent: oklch(0.957 0.011 234.8); /* BRAND_LIGHT #EAF2F7 */
-  --accent-foreground: oklch(0.335 0.054 233.5); /* BRAND_DARKER #153B4E */
-  --positive: oklch(0.6 0.13 165);
-  --negative: oklch(0.6 0.19 25);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.22 0.02 250 / 0.1);
-  --input: oklch(0.22 0.02 250 / 0.12);
-  --ring: oklch(0.517 0.089 237.7);
-  --chart-1: oklch(0.517 0.089 237.7); /* BRAND #2E6F95 */
-  --chart-2: oklch(0.585 0.09 231.7); /* ACCENT blue #3B85A8 */
-  --chart-3: oklch(0.768 0.056 230); /* PASTEL peach #8FBBD1 */
-  --chart-4: oklch(0.335 0.054 233.5); /* BRAND_DARKER #153B4E */
-  --hero-field:
-    radial-gradient(120% 90% at 85% -10%, oklch(0.9 0.03 235 / 0.9), transparent 55%),
-    radial-gradient(90% 80% at 5% 120%, oklch(0.92 0.02 235 / 0.7), transparent 50%),
-    linear-gradient(180deg, oklch(0.975 0.006 237), oklch(0.96 0.01 237));
-  --shadow-glass: inset 0 1px 0 oklch(1 0 0 / 0.6), 0 28px 60px -34px oklch(0.3 0.05 240 / 0.45);
+  --radius: 1rem;
+  /* Noir & Gold palette */
+  --background: #050505;
+  --foreground: #e5e5e5;
+  --card: oklch(1 0 0 / 0.035);
+  --card-foreground: #e5e5e5;
+  --popover: #141414;
+  --popover-foreground: #e5e5e5;
+  --primary: #d4af37;
+  --primary-foreground: #0a0a0a;
+  --primary-soft: #d4af3714;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #e5e5e5;
+  --muted: #1a1a1a;
+  --muted-foreground: #8f8f8f;
+  --accent: #1c1a12;
+  --accent-foreground: #f0d78c;
+  --positive: #7fbf8e;
+  --negative: #f87171;
+  --destructive: #ef4444;
+  --destructive-foreground: #fff;
+  --border: #262626;
+  --input: #2e2e2e;
+  --ring: #d4af37;
+  --chart-1: #d4af37; /* gold — primary data */
+  --chart-2: #f0d78c; /* champagne — secondary data */
+  --chart-3: #a3a3a3; /* neutral silver */
+  --chart-4: #8c6d1f; /* deep gold */
+  --chart-5: #525252; /* graphite */
+  --border-card: #262626;
+  --hero-glow: radial-gradient(
+    90% 70% at 85% -20%,
+    #d4af370f,
+    transparent 60%
+  );
+  --shadow-glass: 0 1px 0 #ffffff08 inset, 0 28px 60px -34px #000000cc;
 }
 
 @utility glass {
-  background-image: linear-gradient(
-    135deg,
-    oklch(0.99 0.004 240 / 0.9),
-    oklch(0.97 0.015 230 / 0.55)
-  );
-  backdrop-filter: blur(10px);
-  border: 1px solid oklch(0.96 0.01 240 / 0.95);
+  background-color: var(--card);
+  border: 1px solid var(--border-card);
   box-shadow: var(--shadow-glass);
 }
-@utility hero-field {
-  background: var(--hero-field);
+
+@utility hero-glow {
+  background-image: var(--hero-glow);
+}
+
+@utility card-hover {
+  transition: border-color 0.25s ease;
+  &:hover {
+    border-color: #d4af3780;
+  }
 }
 
 @layer base {
   * {
     border-color: var(--color-border);
   }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: #d4af37;
+    color: #0a0a0a;
   }
 }
