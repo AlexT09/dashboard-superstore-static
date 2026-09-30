@@ -26,6 +26,22 @@ No necesita instalar nada ni internet. El archivo se puede enviar por correo, Wh
 
 Todos los cálculos se hacen en el navegador, por eso el archivo funciona solo, sin servidor.
 
+## Estructura
+
+```
+├── docs/
+│   ├── dashboard_superstore.html  ← el dashboard (archivo para descargar y enviar)
+│   └── index.html                 ← copia idéntica, la que muestra el link web
+├── src/                           ← código fuente (gráficos, cálculos y datos)
+├── index.html                     ← plantilla que usa Vite para compilar (no es el dashboard)
+├── package.json                   ← dependencias y comandos
+└── vite.config.ts                 ← configuración de compilación
+```
+
+**Ramas:** `main` tiene el código; `gh-pages` tiene solo el HTML publicado en
+https://alext09.github.io/dashboard-superstore-static/ (se actualiza con `npm run build` y
+`ghp-import -n -p -f docs`).
+
 ---
 
 Proyecto: Alex Teran y David Estrada.
