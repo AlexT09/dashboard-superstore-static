@@ -37,6 +37,28 @@ const SAMPLE_SOURCE = "Sample Superstore";
 const STORAGE = "ventas-dataset-v1";
 type Filter = Record<Dim, string | null>;
 
+/**
+ * Descarga el propio dashboard: vuelve a pedir la URL que ya cargó (GitHub Pages sirve la carpeta
+ * pero no la ruta explícita /index.html) y la guarda como archivo.
+ */
+async function downloadSelf() {
+  const url = location.href.split("#")[0]!;
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(String(res.status));
+    const blob = new Blob([await res.text()], { type: "text/html;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "dashboard_superstore.html";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  } catch {
+    alert("No se pudo descargar. Usa Ctrl+S (Guardar como) para guardar la página.");
+  }
+}
+
 export function App() {
   const [data, setData] = useState<{ orders: Order[]; source: string; updated: string | null }>(
     () => ({ orders: getOrders(), source: SAMPLE_SOURCE, updated: null }),
@@ -143,13 +165,12 @@ export function App() {
               </button>
             )}
             {online && (
-              <a
-                href="./index.html"
-                download="dashboard_superstore.html"
+              <button
+                onClick={() => void downloadSelf()}
                 className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium hover:bg-primary-soft"
               >
                 ↓ Descargar dashboard (HTML)
-              </a>
+              </button>
             )}
             <input
               ref={fileRef}
