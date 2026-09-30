@@ -4,11 +4,15 @@ Dashboard interactivo que responde la pregunta de negocio del proyecto:
 **¿qué factores (categoría, región y segmento) explican el nivel de ventas (`Sales`)?**
 
 Es el mismo dashboard de `dash-src` (mismos gráficos, cifras e interpretaciones), **sin el asistente de IA**, y
-empaquetado en **un solo archivo**: [`docs/index.html`](docs/index.html). No necesita servidor ni instalación.
+empaquetado en **un solo archivo HTML**. No necesita servidor ni instalación.
 
-- **Ver en línea:** `https://<tu-usuario>.github.io/<nombre-del-repo>/` (ver [Publicar con GitHub Pages](#publicar-con-github-pages))
-- **Descargar:** abre [`docs/index.html`](docs/index.html) en GitHub y usa el botón *Download raw file* (↓).
-  Ese único archivo es el dashboard completo: se puede enviar por correo, WhatsApp, Drive o USB.
+- **Ver en línea:** https://alext09.github.io/dashboard-superstore-static/
+- **Descargar:** abre [`docs/dashboard_superstore.html`](docs/dashboard_superstore.html) en GitHub y usa el botón
+  *Download raw file* (↓). Ese único archivo es el dashboard completo: se puede enviar por correo, WhatsApp
+  (como documento), Drive o USB, y se abre con doble clic en cualquier navegador.
+
+> `docs/index.html` y `docs/dashboard_superstore.html` son el mismo archivo. `index.html` existe porque GitHub Pages
+> necesita ese nombre para el link; `dashboard_superstore.html` es la copia con buen nombre para enviar.
 
 Proyecto: Alex Teran y David Estrada.
 
@@ -55,7 +59,7 @@ calculan con los datos filtrados en ese momento.
 
 **Flujo:** `src/data/superstore.json` (datos) → `src/lib/stats.ts` (media, mediana, cuartiles, asimetría, η²,
 correlaciones, histograma, densidad) → `src/App.tsx` (gráficos e interpretaciones) → `npm run build` →
-`docs/index.html`.
+`docs/index.html` + `docs/dashboard_superstore.html`.
 
 **¿Por qué funciona sin servidor?** Todos los cálculos ocurren en el navegador con JavaScript. A diferencia de la
 app Dash en Python, que necesita un servidor ejecutando los *callbacks*, este archivo no depende de nadie del otro
@@ -67,7 +71,9 @@ sistema y todo lo demás funciona igual.
 ## Estructura
 
 ```
-├── docs/index.html        ← el dashboard compilado (lo que se publica y se descarga)
+├── docs/
+│   ├── index.html                 ← el dashboard compilado (lo que publica GitHub Pages)
+│   └── dashboard_superstore.html  ← copia idéntica para descargar y enviar
 ├── index.html             ← plantilla de entrada para Vite (título y descripción)
 ├── src/
 │   ├── App.tsx            ← gráficos, filtros e interpretaciones (igual que dash-src, sin la IA)
@@ -88,7 +94,7 @@ Requisito: [Node.js](https://nodejs.org) 20 o superior.
 ```powershell
 npm install        # una sola vez
 npm run dev        # vista previa en http://localhost:5173 con recarga automática
-npm run build      # genera docs/index.html
+npm run build      # genera docs/index.html y docs/dashboard_superstore.html
 ```
 
 Después de `npm run build`, sube los cambios (`git add .`, `git commit -m "..."`, `git push`) y GitHub Pages se
