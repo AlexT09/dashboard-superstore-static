@@ -7,8 +7,8 @@ Es el mismo dashboard de `dash-src` (mismos gráficos, cifras e interpretaciones
 empaquetado en **un solo archivo**: [`docs/index.html`](docs/index.html). No necesita servidor ni instalación.
 
 - **Ver en línea:** `https://<tu-usuario>.github.io/<nombre-del-repo>/` (ver [Publicar con GitHub Pages](#publicar-con-github-pages))
-- **Descargar:** botón **"↓ Descargar dashboard (HTML)"** en la página publicada, o el archivo
-  [`docs/index.html`](docs/index.html) desde GitHub (botón *Download raw file*).
+- **Descargar:** abre [`docs/index.html`](docs/index.html) en GitHub y usa el botón *Download raw file* (↓).
+  Ese único archivo es el dashboard completo: se puede enviar por correo, WhatsApp, Drive o USB.
 
 Proyecto: Alex Teran y David Estrada.
 

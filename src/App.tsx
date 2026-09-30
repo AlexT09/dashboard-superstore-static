@@ -37,28 +37,6 @@ const SAMPLE_SOURCE = "Sample Superstore";
 const STORAGE = "ventas-dataset-v1";
 type Filter = Record<Dim, string | null>;
 
-/**
- * Descarga el propio dashboard: vuelve a pedir la URL que ya cargó (GitHub Pages sirve la carpeta
- * pero no la ruta explícita /index.html) y la guarda como archivo.
- */
-async function downloadSelf() {
-  const url = location.href.split("#")[0]!;
-  try {
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) throw new Error(String(res.status));
-    const blob = new Blob([await res.text()], { type: "text/html;charset=utf-8" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "dashboard_superstore.html";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  } catch {
-    alert("No se pudo descargar. Usa Ctrl+S (Guardar como) para guardar la página.");
-  }
-}
-
 export function App() {
   const [data, setData] = useState<{ orders: Order[]; source: string; updated: string | null }>(
     () => ({ orders: getOrders(), source: SAMPLE_SOURCE, updated: null }),
@@ -67,8 +45,6 @@ export function App() {
   const [scatterVar, setScatterVar] = useState<"discount" | "quantity" | "profit">("profit");
   const [err, setErr] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  // Solo tiene sentido desde el link de GitHub Pages; abierto como archivo, el usuario ya lo tiene.
-  const online = typeof location !== "undefined" && location.protocol.startsWith("http");
 
   useEffect(() => {
     try {
@@ -162,14 +138,6 @@ export function App() {
                 className="rounded-full border border-border bg-card px-3 py-1.5 text-xs hover:bg-primary-soft"
               >
                 Restaurar dataset original
-              </button>
-            )}
-            {online && (
-              <button
-                onClick={() => void downloadSelf()}
-                className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium hover:bg-primary-soft"
-              >
-                ↓ Descargar dashboard (HTML)
               </button>
             )}
             <input
