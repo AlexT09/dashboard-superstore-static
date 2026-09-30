@@ -5,117 +5,84 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system — "Oro editorial".
- * Noir & Gold: near-black backgrounds, muted neutral cards, gold accents used
- * only for emphasis and data highlights. Space Grotesk headings, DM Sans body,
- * JetBrains Mono for micro-labels and axis ticks.
+ * Design system — "Centro de control".
+ * Grafito oscuro con superficies escalonadas, un único acento verde tomado del asa del
+ * carrito de la foto del proyecto (solo para navegación y estados), y datos en azul.
+ * IBM Plex Sans para texto, IBM Plex Mono para cifras, etiquetas y ejes.
  */
 
 @theme inline {
-  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", "DM Sans", ui-sans-serif, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --font-display: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  --radius-2xl: calc(var(--radius) + 6px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-soft: var(--primary-soft);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
+  --color-soft-foreground: var(--soft-foreground);
   --color-positive: var(--positive);
   --color-negative: var(--negative);
+  --color-warning: var(--warning);
   --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
-  --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-ring-offset-background: var(--background);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --animate-rise: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-  @keyframes rise {
-    from {
-      opacity: 0;
-      transform: translateY(14px);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
 }
 
 :root {
-  --radius: 1rem;
-  /* Noir & Gold palette */
-  --background: #050505;
-  --foreground: #e5e5e5;
-  --card: oklch(1 0 0 / 0.035);
-  --card-foreground: #e5e5e5;
-  --popover: #141414;
-  --popover-foreground: #e5e5e5;
-  --primary: #d4af37;
-  --primary-foreground: #0a0a0a;
-  --primary-soft: #d4af3714;
-  --secondary: #1a1a1a;
-  --secondary-foreground: #e5e5e5;
-  --muted: #1a1a1a;
-  --muted-foreground: #8f8f8f;
-  --accent: #1c1a12;
-  --accent-foreground: #f0d78c;
-  --positive: #7fbf8e;
-  --negative: #f87171;
-  --destructive: #ef4444;
-  --destructive-foreground: #fff;
-  --border: #262626;
-  --input: #2e2e2e;
-  --ring: #d4af37;
-  --chart-1: #d4af37; /* gold — primary data */
-  --chart-2: #f0d78c; /* champagne — secondary data */
-  --chart-3: #a3a3a3; /* neutral silver */
-  --chart-4: #8c6d1f; /* deep gold */
-  --chart-5: #525252; /* graphite */
-  --border-card: #262626;
-  --hero-glow: radial-gradient(
-    90% 70% at 85% -20%,
-    #d4af370f,
-    transparent 60%
-  );
-  --shadow-glass: 0 1px 0 #ffffff08 inset, 0 28px 60px -34px #000000cc;
+  --radius: 0.625rem;
+  --background: #0f1114;
+  --surface: #14171b;
+  --surface-2: #1e2227;
+  --foreground: #f2f4f5;
+  --card: #171a1e;
+  --card-foreground: #f2f4f5;
+  --primary: #3987e5; /* datos */
+  --primary-foreground: #ffffff;
+  --primary-soft: #3987e51f;
+  --accent: #4cbb5c; /* verde del carrito: navegación y estados */
+  --accent-soft: #4cbb5c24;
+  --muted: #22262b;
+  --muted-foreground: #7d858d;
+  --soft-foreground: #b6bcc2;
+  --positive: #4cbb5c;
+  --negative: #e66767;
+  --warning: #ec835a;
+  --destructive: #e66767;
+  --border: #262a30;
+  --ring: #3987e5;
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  color-scheme: dark;
 }
 
-@utility glass {
+@utility panel {
   background-color: var(--card);
-  border: 1px solid var(--border-card);
-  box-shadow: var(--shadow-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
 }
 
-@utility hero-glow {
-  background-image: var(--hero-glow);
-}
-
-@utility card-hover {
-  transition: border-color 0.25s ease;
-  &:hover {
-    border-color: #d4af3780;
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -124,15 +91,41 @@
     border-color: var(--color-border);
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  section[id] {
+    scroll-margin-top: 7.5rem;
+  }
+
+  @media (min-width: 64rem) {
+    section[id] {
+      scroll-margin-top: 1.5rem;
+    }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
 
   ::selection {
-    background: #d4af37;
-    color: #0a0a0a;
+    background: #3987e5;
+    color: #fff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 }
