@@ -1,8 +1,6 @@
-# Proyecto Sample Superstore
+# Introducción
 
-**Factores que explican el nivel de ventas · Análisis exploratorio de datos (EDA)**
-
-*Proyecto: Alex Teran y David Estrada*
+*Análisis exploratorio de datos del dataset Sample Superstore*
 
 ## El problema
 
@@ -13,12 +11,6 @@ pérdidas.
 
 ## Pregunta problema
 
-```{admonition} Pregunta de investigación
-:class: tip
-¿Qué factores (categoría, región, segmento) explican el nivel de ventas (`Sales`)?
-```
+**¿Qué factores (categoría, región, segmento) explican el nivel de ventas (`Sales`)?**
 
-Recorre los capítulos para conocer el contexto, los objetivos, la metodología y el EDA:
-
-```{tableofcontents}
-```
+Recorre las pestañas para conocer el contexto, los objetivos, la metodología y el EDA.

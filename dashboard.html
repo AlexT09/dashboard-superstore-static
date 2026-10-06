@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -173,7 +173,7 @@
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="intro.html">
-                    Proyecto Sample Superstore
+                    Introducción
                 </a>
             </li>
         </ul>
@@ -334,7 +334,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -350,6 +352,14 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contenido </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dashboard-3d-de-ventas-sample-superstore">Dashboard 3D de ventas · Sample Superstore</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -361,19 +371,11 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="dashboard">
 <h1>Dashboard<a class="headerlink" href="#dashboard" title="Link to this heading">#</a></h1>
-<p><em>Dashboard de ventas interactivo — insights que responden a los objetivos del proyecto</em></p>
-<p>El dashboard 3D muestra un anillo de tarjetas con los KPIs que abre la vista de gráficos, con filtros
-por categoría, región, segmento y año. Lo genera <code class="docutils literal notranslate"><span class="pre">dashboard/build_dashboard.py</span></code> del proyecto Dash, a
-partir del mismo dataset transformado que usa el <a class="reference internal" href="eda.html"><span class="std std-doc">EDA</span></a>.</p>
+<p><em>Dashboard de ventas interactivo — insights que responden a los objetivos del proyecto (Sample Superstore)</em></p>
+<section id="dashboard-3d-de-ventas-sample-superstore">
+<h2>Dashboard 3D de ventas · Sample Superstore<a class="headerlink" href="#dashboard-3d-de-ventas-sample-superstore" title="Link to this heading">#</a></h2>
 <iframe src="_static/3d/3DWebDashboard.html" title="Dashboard 3D de ventas · Sample Superstore"
-        style="width:100%;height:820px;border:0;border-radius:12px" loading="lazy"></iframe><p><a href="_static/3d/3DWebDashboard.html" target="_blank">Abrir el dashboard 3D en pantalla completa</a> ·
-<a href="_static/dashboard.html" target="_blank">abrir la versión 2D</a></p>
-<div class="admonition note">
-<p class="admonition-title">Nota</p>
-<p>El dashboard 3D lee sus datos con <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, así que solo funciona cuando el libro se sirve por HTTP
-(GitHub Pages o <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">http.server</span></code>), no abriendo el HTML con doble clic. También necesita
-internet: React, Plotly y las fuentes se cargan desde un CDN.</p>
-</div>
+        style="width:100%;height:820px;border:0;border-radius:12px" loading="lazy"></iframe></section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -430,6 +432,21 @@ internet: React, Plotly y las fuentes se cargan desde un CDN.</p>
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contenido
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dashboard-3d-de-ventas-sample-superstore">Dashboard 3D de ventas · Sample Superstore</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

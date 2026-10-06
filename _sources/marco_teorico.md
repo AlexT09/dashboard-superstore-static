@@ -9,6 +9,8 @@ covariación entre variables (bivariado).
 
 ## Operacionalización de variables
 
+### Tabla de operacionalización
+
 | Variable | Definición | Tipo | Escala / valores | Rol |
 |---|---|---|---|---|
 | **Sales** | Valor monetario de la línea de pedido | Numérica continua | USD (≥ 0) | Numérica |

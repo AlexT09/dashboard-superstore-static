@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -173,7 +173,7 @@
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="intro.html">
-                    Proyecto Sample Superstore
+                    Introducción
                 </a>
             </li>
         </ul>
@@ -263,7 +263,7 @@
       
       
       
-      <li><a href="_sources/metodologia.ipynb" target="_blank"
+      <li><a href="_sources/metodologia.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Descargar archivo fuente"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -273,7 +273,7 @@
 <span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="btn__text-container">.ipynb</span>
+<span class="btn__text-container">.md</span>
 </a>
 </li>
       
@@ -357,7 +357,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#etl-en-python">ETL en Python</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#etl">ETL</a></li>
 </ul>
             </nav>
         </div>
@@ -372,7 +372,8 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="metodologia">
 <h1>Metodología<a class="headerlink" href="#metodologia" title="Link to this heading">#</a></h1>
 <p><em>ETL: de los datos crudos al dataset transformado</em></p>
-<p>El proceso ETL se planteó originalmente en R con <code class="docutils literal notranslate"><span class="pre">tidyverse</span></code>:</p>
+<section id="etl">
+<h2>ETL<a class="headerlink" href="#etl" title="Link to this heading">#</a></h2>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span>
 
 <span class="c1"># --- Extracción ---</span>
@@ -394,220 +395,9 @@ document.write(`
 <span class="nf">write_csv</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="s">"superstore_transformado.csv"</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Se convierten <code class="docutils literal notranslate"><span class="pre">Order</span> <span class="pre">Date</span></code> y <code class="docutils literal notranslate"><span class="pre">Ship</span> <span class="pre">Date</span></code> de texto a fecha usando <code class="docutils literal notranslate"><span class="pre">mdy()</span></code> de lubridate (formato
-mes/día/año, como vienen en el archivo), y con <code class="docutils literal notranslate"><span class="pre">arrange()</span></code> se ordenan las filas por fecha de pedido.</p>
-<section id="etl-en-python">
-<h2>ETL en Python<a class="headerlink" href="#etl-en-python" title="Link to this heading">#</a></h2>
-<p>El proyecto replica el mismo proceso con pandas (<code class="docutils literal notranslate"><span class="pre">data/generate_data.py</span></code>):</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-
-<span class="c1"># --- Extracción</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"data/raw/Sample - Superstore.csv"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"latin1"</span><span class="p">)</span>
-
-<span class="c1"># --- Transformación</span>
-<span class="n">df</span><span class="p">[</span><span class="s2">"Order Date"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Order Date"</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"%m/</span><span class="si">%d</span><span class="s2">/%Y"</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="s2">"Ship Date"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Ship Date"</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"%m/</span><span class="si">%d</span><span class="s2">/%Y"</span><span class="p">)</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"Order Date"</span><span class="p">:</span> <span class="s2">"Order_Date"</span><span class="p">})</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"Order_Date"</span><span class="p">)</span>
-
-<span class="c1"># --- Carga (el archivo ya viene generado; descomentar para regenerarlo)</span>
-<span class="c1"># df.to_csv("data/superstore_transformado.csv", index=False)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Fuente: Sample - Superstore (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> filas, </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columnas)"</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fuente: Sample - Superstore (9,994 filas, 21 columnas)
-</pre></div>
-</div>
-</div>
-</div>
-<p>Primeras filas del dataset transformado:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[[</span><span class="s2">"Order_Date"</span><span class="p">,</span> <span class="s2">"Ship Date"</span><span class="p">,</span> <span class="s2">"Category"</span><span class="p">,</span> <span class="s2">"Region"</span><span class="p">,</span> <span class="s2">"Segment"</span><span class="p">,</span> <span class="s2">"State"</span><span class="p">,</span>
-    <span class="s2">"Sales"</span><span class="p">,</span> <span class="s2">"Quantity"</span><span class="p">,</span> <span class="s2">"Discount"</span><span class="p">,</span> <span class="s2">"Profit"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_html"><div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Order_Date</th>
-      <th>Ship Date</th>
-      <th>Category</th>
-      <th>Region</th>
-      <th>Segment</th>
-      <th>State</th>
-      <th>Sales</th>
-      <th>Quantity</th>
-      <th>Discount</th>
-      <th>Profit</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>7980</th>
-      <td>2014-01-03</td>
-      <td>2014-01-07</td>
-      <td>Office Supplies</td>
-      <td>Central</td>
-      <td>Consumer</td>
-      <td>Texas</td>
-      <td>16.448</td>
-      <td>2</td>
-      <td>0.2</td>
-      <td>5.5512</td>
-    </tr>
-    <tr>
-      <th>739</th>
-      <td>2014-01-04</td>
-      <td>2014-01-08</td>
-      <td>Office Supplies</td>
-      <td>Central</td>
-      <td>Home Office</td>
-      <td>Illinois</td>
-      <td>11.784</td>
-      <td>3</td>
-      <td>0.2</td>
-      <td>4.2717</td>
-    </tr>
-    <tr>
-      <th>740</th>
-      <td>2014-01-04</td>
-      <td>2014-01-08</td>
-      <td>Office Supplies</td>
-      <td>Central</td>
-      <td>Home Office</td>
-      <td>Illinois</td>
-      <td>272.736</td>
-      <td>3</td>
-      <td>0.2</td>
-      <td>-64.7748</td>
-    </tr>
-    <tr>
-      <th>741</th>
-      <td>2014-01-04</td>
-      <td>2014-01-08</td>
-      <td>Office Supplies</td>
-      <td>Central</td>
-      <td>Home Office</td>
-      <td>Illinois</td>
-      <td>3.540</td>
-      <td>2</td>
-      <td>0.8</td>
-      <td>-5.4870</td>
-    </tr>
-    <tr>
-      <th>1759</th>
-      <td>2014-01-05</td>
-      <td>2014-01-12</td>
-      <td>Office Supplies</td>
-      <td>East</td>
-      <td>Consumer</td>
-      <td>Pennsylvania</td>
-      <td>19.536</td>
-      <td>3</td>
-      <td>0.2</td>
-      <td>4.8840</td>
-    </tr>
-  </tbody>
-</table>
-</div></div></div>
-</div>
-<p>Tipos de las variables usadas en el análisis:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[[</span><span class="s2">"Order_Date"</span><span class="p">,</span> <span class="s2">"Category"</span><span class="p">,</span> <span class="s2">"Sub-Category"</span><span class="p">,</span> <span class="s2">"Region"</span><span class="p">,</span> <span class="s2">"Segment"</span><span class="p">,</span> <span class="s2">"Ship Mode"</span><span class="p">,</span>
-    <span class="s2">"Sales"</span><span class="p">,</span> <span class="s2">"Quantity"</span><span class="p">,</span> <span class="s2">"Discount"</span><span class="p">,</span> <span class="s2">"Profit"</span><span class="p">]]</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="s2">"tipo"</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_html"><div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>tipo</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Order_Date</th>
-      <td>datetime64[ns]</td>
-    </tr>
-    <tr>
-      <th>Category</th>
-      <td>object</td>
-    </tr>
-    <tr>
-      <th>Sub-Category</th>
-      <td>object</td>
-    </tr>
-    <tr>
-      <th>Region</th>
-      <td>object</td>
-    </tr>
-    <tr>
-      <th>Segment</th>
-      <td>object</td>
-    </tr>
-    <tr>
-      <th>Ship Mode</th>
-      <td>object</td>
-    </tr>
-    <tr>
-      <th>Sales</th>
-      <td>float64</td>
-    </tr>
-    <tr>
-      <th>Quantity</th>
-      <td>int64</td>
-    </tr>
-    <tr>
-      <th>Discount</th>
-      <td>float64</td>
-    </tr>
-    <tr>
-      <th>Profit</th>
-      <td>float64</td>
-    </tr>
-  </tbody>
-</table>
-</div></div></div>
-</div>
+<p>Fuente: Sample - Superstore (9,994 filas). Se convierten Order Date y Ship Date de texto a fecha
+usando mdy() de lubridate (formato mes/día/año, como vienen en el archivo), y con arrange() se
+ordenan las filas por fecha de pedido.</p>
 </section>
 </section>
 
@@ -675,7 +465,7 @@ mes/día/año, como vienen en el archivo), y con <code class="docutils literal n
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#etl-en-python">ETL en Python</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#etl">ETL</a></li>
 </ul>
   </nav></div>
 
