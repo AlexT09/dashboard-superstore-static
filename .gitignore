@@ -1,6 +1,5 @@
-node_modules
-*.log
-.vscode
-.idea
-.DS_Store
-# docs/ SÍ se sube: es el dashboard compilado que publica GitHub Pages
+_build/
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/

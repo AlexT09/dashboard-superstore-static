@@ -1,0 +1,6 @@
+jupyter-book>=1.0,<2
+pandas>=2.1
+numpy>=1.26
+plotly>=5.20
+statsmodels>=0.14
+ipykernel

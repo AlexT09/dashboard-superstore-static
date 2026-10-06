@@ -1,0 +1,19 @@
+# Tabla de contenidos — mismo orden que las pestañas de la app Dash
+format: jb-book
+root: intro
+parts:
+  - caption: Planteamiento
+    chapters:
+      - file: contexto
+      - file: problema
+      - file: objetivos
+      - file: marco_teorico
+  - caption: Análisis
+    chapters:
+      - file: metodologia
+      - file: eda
+      - file: dashboard
+  - caption: Cierre
+    chapters:
+      - file: limitaciones
+      - file: conclusiones

@@ -1,47 +1,89 @@
-# Dashboard de ventas · Sample Superstore
+# Proyecto Sample Superstore — Jupyter Book
 
-Dashboard interactivo que responde: **¿qué factores (categoría, región y segmento) explican el nivel de ventas?**
+Análisis exploratorio de datos (EDA) del dataset **Sample Superstore** para responder la
+pregunta de negocio: **¿qué factores (categoría, región, segmento) explican el nivel de ventas?**
 
-Todo el dashboard está en un solo archivo HTML: **[`docs/dashboard_superstore.html`](docs/dashboard_superstore.html)**.
+Es el mismo proyecto de la app Dash ([proyecto_superstorep](https://github.com/AlexT09/proyecto_superstorep)),
+entregado como **Jupyter Book**: cada pestaña de la app es un capítulo del libro, y el EDA es un
+notebook que se ejecuta al construir el libro.
 
-## Cómo verlo
+## Requisitos
 
-1. Abre [`docs/dashboard_superstore.html`](docs/dashboard_superstore.html) y haz clic en **Download raw file** (↓).
-2. Haz **doble clic** en el archivo descargado: se abre en el navegador (Chrome, Edge, Firefox o Safari).
-3. Usa los filtros de **Categoría**, **Región** y **Segmento**: los gráficos, cifras e interpretaciones se
-   actualizan solos.
+- **Python** 3.10 o superior
 
-No necesita instalar nada ni internet. El archivo se puede enviar por correo, WhatsApp o Drive.
+## Cómo construir el libro
 
-## Tecnologías
+```powershell
+python -m venv .venv
+.venv\Scripts\activate       # en macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
+jupyter-book build .
+```
 
-| Tecnología | Para qué sirve |
-|---|---|
-| **React** | Arma la página con componentes (filtros, tarjetas, KPIs) y la actualiza al cambiar un filtro. |
-| **TypeScript** | JavaScript con tipos, para evitar errores en el código. |
-| **Recharts** | Dibuja los gráficos (barras, áreas, dispersión) con animaciones y tooltips. |
-| **Tailwind CSS** | Da el diseño y los colores. |
-| **Vite** | Compila el proyecto. |
-| **vite-plugin-singlefile** | Junta datos, gráficos y estilos en **un solo archivo HTML**. |
+El HTML queda en `_build/html/`. Para verlo con el dashboard 3D funcionando, sírvelo por HTTP:
 
-Todos los cálculos se hacen en el navegador, por eso el archivo funciona solo, sin servidor.
+```powershell
+python -m http.server 8000 --directory _build/html
+```
+
+Y abre **http://localhost:8000**. Abriendo `_build/html/index.html` con doble clic se ven todos los
+capítulos y gráficas, pero el dashboard 3D no carga sus datos (usa `fetch`).
+
+## Publicación (GitHub Pages)
+
+El libro publicado está en **https://alext09.github.io/dashboard-superstore-static/**, servido desde
+la rama `gh-pages`, que contiene solo el HTML de `_build/html/` (más un `.nojekyll`, necesario para
+que GitHub sirva las carpetas que empiezan con `_`). Para actualizarlo, se construye el libro y se
+reemplaza el contenido de esa rama con `_build/html/`.
+
+## Capítulos
+
+| Capítulo | Archivo | Pestaña de la app |
+|---|---|---|
+| Introducción | `intro.md` | Introducción |
+| Contexto | `contexto.md` | Contexto |
+| Planteamiento del problema | `problema.md` | Problema |
+| Objetivos | `objetivos.md` | Objetivos |
+| Marco teórico | `marco_teorico.md` | Marco teórico |
+| Metodología (ETL) | `metodologia.ipynb` | Metodología |
+| EDA | `eda.ipynb` | EDA |
+| Dashboard | `dashboard.md` | Dashboard |
+| Limitaciones | `limitaciones.md` | Limitaciones |
+| Conclusiones | `conclusiones.md` | Conclusiones |
+
+## Gráficas
+
+Las gráficas son de **Plotly** e interactivas. Para no repetir plotly.js (~4 MB) en cada gráfica, la
+función `show()` de `common.py` inserta solo la figura y el libro carga la librería una vez
+(`_config.yml` → `html_js_files`). Por eso, si abres los notebooks en Jupyter, las gráficas no se
+ven en el notebook: se ven en el libro construido.
+
+## Dashboard
+
+`_static/3d/` es una copia de `3DWebDashboard/` del proyecto Dash, y `_static/3d/dashboard_data.html`
+(igual que `_static/dashboard.html`) es el `assets/dashboard.html` que genera
+`dashboard/build_dashboard.py`. Si cambian los datos, regenéralo en el proyecto Dash y copia el
+archivo a esas dos rutas.
 
 ## Estructura
 
 ```
-├── docs/
-│   ├── dashboard_superstore.html  ← el dashboard (archivo para descargar y enviar)
-│   └── index.html                 ← copia idéntica, la que muestra el link web
-├── src/                           ← código fuente (gráficos, cálculos y datos)
-├── index.html                     ← plantilla que usa Vite para compilar (no es el dashboard)
-├── package.json                   ← dependencias y comandos
-└── vite.config.ts                 ← configuración de compilación
+├── _config.yml            # Configuración del libro
+├── _toc.yml               # Tabla de contenidos (orden de los capítulos)
+├── common.py              # Rutas, carga de datos, paleta y show() para las figuras
+├── requirements.txt
+├── intro.md … conclusiones.md
+├── metodologia.ipynb      # ETL
+├── eda.ipynb              # Análisis univariado, bivariado y temporal
+├── _static/
+│   ├── dashboard.html     # Dashboard 2D (Plotly)
+│   └── 3d/                # Dashboard 3D
+└── data/
+    ├── raw/               # Dataset original
+    ├── generate_data.py   # Limpieza y transformación
+    └── superstore_transformado.csv
 ```
-
-**Ramas:** `main` tiene el código; `gh-pages` tiene solo el HTML publicado en
-https://alext09.github.io/dashboard-superstore-static/ (se actualiza con `npm run build` y
-`ghp-import -n -p -f docs`).
 
 ---
 
-Proyecto: Alex Teran y David Estrada.
+Proyecto: Alex Teran y David Estrada
