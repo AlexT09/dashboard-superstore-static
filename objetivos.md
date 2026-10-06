@@ -8,27 +8,26 @@ Determinar qué factores (categoría, región y segmento) explican el nivel de v
 
 ## Objetivos específicos
 
-1. Describir la distribución de la variable `Sales` mediante estadísticos de resumen y gráficas
-   univariadas (histograma, densidad de log(Sales)).
-2. Analizar la distribución de los pedidos según las variables categóricas `Category`, `Region` y
-   `Segment`.
-3. Explorar la relación entre `Sales` y las variables numéricas `Discount`, `Quantity` y `Profit`.
-4. Evaluar cómo varía `Sales` en función de `Category`, `Region` y `Segment`.
+- Describir la distribución de la variable `Sales` mediante estadísticos de resumen y gráficas
+  univariadas (histograma, densidad de log(Sales)).
+- Analizar la distribución de los pedidos según las variables categóricas `Category`, `Region` y
+  `Segment`.
+- Explorar la relación entre `Sales` y las variables numéricas `Discount`, `Quantity` y `Profit`.
+- Evaluar cómo varía `Sales` en función de `Category`, `Region` y `Segment`.
 
 ## Variables disponibles y su tipo
 
-| Tipo | Variables |
-|---|---|
-| **Categóricas** | `Category`, `Sub-Category`, `Region`, `Segment`, `Ship Mode` |
-| **Numéricas** | `Sales`, `Quantity`, `Discount`, `Profit` |
+**Categóricas:** `Category`, `Sub-Category`, `Region`, `Segment`, `Ship Mode`
+
+**Numéricas:** `Sales`, `Quantity`, `Discount`, `Profit`
 
 ## Preguntas amplias
 
-1. **Variación (categóricas):** ¿Cómo se distribuyen los pedidos entre `Category`, `Region` y
+1. Variación (categóricas): ¿Cómo se distribuyen los pedidos entre `Category`, `Region` y
    `Segment`? ¿Hay categorías con muchos más pedidos que otras?
-2. **Variación (numérica):** ¿Cómo se distribuye `Sales`? ¿La mayoría de los pedidos son de bajo
-   valor o hay muchos pedidos grandes?
-3. **Covariación (categórica → numérica):** ¿El valor de venta (`Sales`) cambia según `Category`,
+2. Variación (numérica): ¿Cómo se distribuye `Sales`? ¿La mayoría de los pedidos son de bajo valor
+   o hay muchos pedidos grandes?
+3. Covariación (categórica → numérica): ¿El valor de venta (`Sales`) cambia según `Category`,
    `Region` o `Segment`?
-4. **Covariación (numérica → numérica):** ¿Existe relación entre `Sales` y `Discount`, `Quantity` o
+4. Covariación (numérica → numérica): ¿Existe relación entre `Sales` y `Discount`, `Quantity` o
    `Profit`?

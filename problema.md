@@ -4,15 +4,12 @@
 
 ## Pregunta problema
 
-```{admonition} Pregunta de investigación
-:class: tip
-¿Qué factores (categoría, región, segmento) explican el nivel de ventas (`Sales`)?
-```
+**¿Qué factores (categoría, región, segmento) explican el nivel de ventas (`Sales`)?**
 
 ## Por qué categoría, región y segmento
 
-`Category`, `Region` y `Segment` son las tres variables categóricas de negocio disponibles en el
-dataset que agrupan los pedidos desde ángulos distintos y complementarios: qué se vende, dónde se
-vende y a qué tipo de cliente se le vende. El planteamiento del problema consiste en determinar si el
-nivel de venta (`Sales`) cambia de forma relevante según cada una de ellas; esa evaluación se
-desarrolla en el capítulo de [EDA](eda.ipynb).
+Category, Region y Segment son las tres variables categóricas de negocio disponibles en el dataset
+que agrupan los pedidos desde ángulos distintos y complementarios: qué se vende, dónde se vende y a
+qué tipo de cliente se le vende. El planteamiento del problema consiste en determinar si el nivel de
+venta (Sales) cambia de forma relevante según cada una de ellas; esa evaluación se desarrolla en la
+sección de EDA.

@@ -11,7 +11,6 @@
 ## Interpretación
 
 - El análisis es asociativo: no demuestra causalidad.
-- La tendencia temporal se apoya en 4 años de datos; no captura efectos externos (economía,
-  competencia).
-- La correlación solo mide relación lineal: el efecto de `Discount` sobre `Sales` parece no lineal
-  (ver el gráfico de bins 2D en el [EDA](eda.ipynb)).
+- La tendencia temporal se apoya en 4 años de datos; no captura efectos externos (economía, competencia).
+- La correlación solo mide relación lineal: el efecto de Discount sobre Sales parece no lineal (ver
+  bins 2D).

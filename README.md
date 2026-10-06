@@ -45,7 +45,7 @@ reemplaza el contenido de esa rama con `_build/html/`.
 | Planteamiento del problema | `problema.md` | Problema |
 | Objetivos | `objetivos.md` | Objetivos |
 | Marco teórico | `marco_teorico.md` | Marco teórico |
-| Metodología (ETL) | `metodologia.ipynb` | Metodología |
+| Metodología (ETL) | `metodologia.md` | Metodología |
 | EDA | `eda.ipynb` | EDA |
 | Dashboard | `dashboard.md` | Dashboard |
 | Limitaciones | `limitaciones.md` | Limitaciones |
@@ -73,7 +73,7 @@ archivo a esas dos rutas.
 ├── common.py              # Rutas, carga de datos, paleta y show() para las figuras
 ├── requirements.txt
 ├── intro.md … conclusiones.md
-├── metodologia.ipynb      # ETL
+├── metodologia.md         # ETL (código R)
 ├── eda.ipynb              # Análisis univariado, bivariado y temporal
 ├── _static/
 │   ├── dashboard.html     # Dashboard 2D (Plotly)

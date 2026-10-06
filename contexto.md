@@ -11,7 +11,7 @@ quién dirigir campañas comerciales, y cómo evaluar el efecto real de los desc
 
 ## Impacto empresarial
 
-- **Inventario:** saber qué categorías generan pedidos de mayor valor permite dimensionar el stock.
-- **Marketing:** dirigir campañas al segmento y región donde el valor por pedido es mayor.
-- **Precios y descuentos:** entender si descontar realmente impulsa el valor de las ventas.
-- **Logística:** coordinar modos de envío con el volumen y el valor de los pedidos.
+- Inventario: saber qué categorías generan pedidos de mayor valor permite dimensionar el stock.
+- Marketing: dirigir campañas al segmento y región donde el valor por pedido es mayor.
+- Precios y descuentos: entender si descontar realmente impulsa el valor de las ventas.
+- Logística: coordinar modos de envío con el volumen y el valor de los pedidos.

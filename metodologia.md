@@ -1,0 +1,31 @@
+# Metodología
+
+*ETL: de los datos crudos al dataset transformado*
+
+## ETL
+
+```r
+library(tidyverse)
+
+# --- Extracción ---
+df <- read_csv(
+  "Sample - Superstore.csv",
+  locale = locale(encoding = "latin1")
+)
+
+# --- Transformación ---
+df <- df %>%
+  mutate(
+    `Order Date` = mdy(`Order Date`),
+    `Ship Date`  = mdy(`Ship Date`)
+  ) %>%
+  rename(Order_Date = `Order Date`) %>%
+  arrange(Order_Date)
+
+# --- Carga ---
+write_csv(df, "superstore_transformado.csv")
+```
+
+Fuente: Sample - Superstore (9,994 filas). Se convierten Order Date y Ship Date de texto a fecha
+usando mdy() de lubridate (formato mes/día/año, como vienen en el archivo), y con arrange() se
+ordenan las filas por fecha de pedido.
