@@ -57,10 +57,10 @@ ven en el notebook: se ven en el libro construido.
 
 ## Dashboard
 
-`_static/3d/` es una copia de `3DWebDashboard/` del proyecto Dash, y `_static/3d/dashboard_data.html`
-(igual que `_static/dashboard.html`) es el `assets/dashboard.html` que genera
-`dashboard/build_dashboard.py`. Si cambian los datos, regenéralo en el proyecto Dash y copia el
-archivo a esas dos rutas.
+`_static/3d/` es una copia de `3DWebDashboard/` del proyecto Dash (incluye `dashboard_core.js` y
+`dashboard_data.json`), y `_static/dashboard.html` es el `assets/dashboard.html` que genera
+`dashboard/build_dashboard.py`. Si cambian los datos, regenéralos en el proyecto Dash y copia esos
+archivos aquí.
 
 ## Estructura
 
