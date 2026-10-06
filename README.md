@@ -31,7 +31,7 @@ capítulos y gráficas, pero el dashboard 3D no carga sus datos (usa `fetch`).
 
 ## Publicación (GitHub Pages)
 
-El libro publicado está en **https://alext09.github.io/dashboard-superstore-static/**, servido desde
+El libro publicado está en **https://alext09.github.io/superstore-jupyterbook/**, servido desde
 la rama `gh-pages`, que contiene solo el HTML de `_build/html/` (más un `.nojekyll`, necesario para
 que GitHub sirva las carpetas que empiezan con `_`). Para actualizarlo, se construye el libro y se
 reemplaza el contenido de esa rama con `_build/html/`.

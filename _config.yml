@@ -19,7 +19,7 @@ html:
   home_page_in_navbar: true
 
 repository:
-  url: https://github.com/AlexT09/dashboard-superstore-static
+  url: https://github.com/AlexT09/superstore-jupyterbook
   branch: main
 
 sphinx:
